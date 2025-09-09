@@ -15,6 +15,44 @@
         .font-serif {
             font-family: 'Playfair Display', serif;
         }
+        .size-color-btn {
+            padding: 8px 16px;
+            border: 1px solid #D1D5DB; /* gray-300 */
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151; /* gray-700 */
+            background-color: white;
+            transition: all 0.2s ease-in-out;
+        }
+        .size-color-btn:hover {
+            background-color: #F3F4F6; /* gray-100 */
+        }
+        .size-color-btn.selected {
+            border-color: #111827; /* gray-900 */
+            background-color: #111827; /* gray-900 */
+            color: white;
+        }
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #374151;
+            background-color: white;
+            transition: background-color 0.2s;
+        }
+        .quantity-btn:hover {
+            background-color: #F3F4F6;
+        }
+         .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-white">
@@ -156,24 +194,50 @@
                     <span class="text-2xl font-bold text-gray-900">৳10</span>
                     <span class="text-sm font-medium text-gray-400">(17% Off)</span>
                 </div>
-
-                <!-- Sizes -->
-                <div class="mb-5">
-                    <h3 class="text-sm font-medium text-gray-700 mb-2">Sizes</h3>
-                    <div id="size-options" class="flex gap-2">
-                        <button class="size-color-btn">Medium</button>
-                        <button class="size-color-btn">Large</button>
-                    </div>
+    
+            <!-- Sizes -->
+            <div class="mb-5">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Sizes</h3>
+                <div id="size-options" class="flex gap-2">
+                    <button class="size-color-btn selected">Medium</button>
+                    <button class="size-color-btn">Large</button>
                 </div>
-
-                <!-- Colors -->
-                <div class="mb-8">
-                    <h3 class="text-sm font-medium text-gray-700 mb-2">Colors</h3>
-                    <div id="color-options" class="flex gap-2">
-                         <button class="size-color-btn">Red</button>
-                         <button class="size-color-btn">Blau</button>
-                    </div>
+            </div>
+    
+            <!-- Colors -->
+            <div class="mb-5">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Colors</h3>
+                <div id="color-options" class="flex gap-2">
+                    <button class="size-color-btn">Red</button>
+                    <button class="size-color-btn selected">Blau</button>
                 </div>
+            </div>
+            
+            <!-- Quantity Section -->
+            <div class="mb-5">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Quantity</h3>
+                <div class="flex items-center gap-4">
+                    <button id="decrease-qty" class="quantity-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                        </svg>
+                    </button>
+                    <span id="quantity" class="text-lg font-bold text-gray-900 w-8 text-center">1</span>
+                    <button id="increase-qty" class="quantity-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+    
+            <!-- Total Price Section -->
+            <div class="mb-8 pt-4 border-t">
+                 <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">Total Price</h3>
+                    <p id="total-price" class="text-2xl font-bold text-gray-900">$25.00</p>
+                 </div>
+            </div>
 
                 <!-- Order Button -->
                 <button class="w-auto bg-gray-900 text-white font-semibold py-2.5 px-8 rounded-md hover:bg-gray-800 transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
@@ -337,6 +401,82 @@
                     imageModal.classList.add('hidden');
                 }
             });
+
+
+
+
+
+            
+            
+            // Element selections
+            const decreaseQtyBtn = document.getElementById('decrease-qty');
+            const increaseQtyBtn = document.getElementById('increase-qty');
+            const quantitySpan = document.getElementById('quantity');
+            const basePriceEl = document.getElementById('base-price');
+            const totalPriceEl = document.getElementById('total-price');
+            const sizeOptions = document.getElementById('size-options');
+            const colorOptions = document.getElementById('color-options');
+
+            // Initial values
+            let quantity = 1;
+            const basePrice = parseFloat(basePriceEl.dataset.price);
+
+            // --- Functions ---
+            
+            // Function to update total price
+            function updateTotalPrice() {
+                const total = (quantity * basePrice).toFixed(2);
+                totalPriceEl.textContent = `$${total}`;
+            }
+
+            // Function to update quantity display and button states
+            function updateQuantityDisplay() {
+                quantitySpan.textContent = quantity;
+                // Disable decrease button if quantity is 1
+                decreaseQtyBtn.disabled = quantity <= 1;
+            }
+
+            // Function to handle selection logic for buttons
+            function handleSelection(container) {
+                const buttons = container.querySelectorAll('.size-color-btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Remove 'selected' class from all buttons in this group
+                        buttons.forEach(btn => btn.classList.remove('selected'));
+                        // Add 'selected' class to the clicked button
+                        button.classList.add('selected');
+                    });
+                });
+            }
+
+
+            // --- Event Listeners ---
+            
+            // Increase quantity
+            increaseQtyBtn.addEventListener('click', () => {
+                quantity++;
+                updateQuantityDisplay();
+                updateTotalPrice();
+            });
+
+            // Decrease quantity
+            decreaseQtyBtn.addEventListener('click', () => {
+                if (quantity > 1) {
+                    quantity--;
+                    updateQuantityDisplay();
+                    updateTotalPrice();
+                }
+            });
+
+            // --- Initial Setup ---
+            
+            // Initialize button states
+            updateQuantityDisplay();
+            // Initialize total price
+            updateTotalPrice();
+            // Setup selection logic for sizes and colors
+            handleSelection(sizeOptions);
+            handleSelection(colorOptions);
         });
     </script>
 
