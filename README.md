@@ -23,3 +23,7 @@ view contact : https://mdashik-develop.github.io/ecommerce-zarasclothbd/contact.
 view order success : https://mdashik-develop.github.io/ecommerce-zarasclothbd/order-success.html
 
 view order cencel : https://mdashik-develop.github.io/ecommerce-zarasclothbd/order-cencel.html
+
+view order blog : https://mdashik-develop.github.io/ecommerce-zarasclothbd/blogs.html
+
+view order blog view : https://mdashik-develop.github.io/ecommerce-zarasclothbd/blogs-view.html
